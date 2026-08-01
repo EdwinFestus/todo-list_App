@@ -4,24 +4,42 @@ const createTask = async (taskData) => {
   return await Task.create(taskData);
 };
 
-const getAllTasks = async () => {
-  return await Task.find().sort({ createdAt: -1 });
-};
-
-const getTaskById = async (id) => {
-  return await Task.findById(id);
-};
-
-const updateTask = async (id, data) => {
-  return await Task.findByIdAndUpdate(id, data, {
-    new: true,
-    runValidators: true,
+const getAllTasks = async (userId) => {
+  return await Task.find({
+    user: userId,
+  }).sort({
+    createdAt: -1,
   });
 };
 
-const deleteTask = async (id) => {
-  return await Task.findByIdAndDelete(id);
+const getTaskById = async (id, userId) => {
+  return await Task.findOne({
+    _id: id,
+    user: userId,
+  });
 };
+
+const updateTask = async (id, userId, data) => {
+  return await Task.findOneAndUpdate(
+    {
+      _id: id,
+      user: userId,
+    },
+    data,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
+
+const deleteTask = async (id, userId) => {
+  return await Task.findOneAndDelete({
+    _id: id,
+    user: userId,
+  });
+};
+
 
 const toggleTask = async (id) => {
   const task = await Task.findById(id);

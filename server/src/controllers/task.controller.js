@@ -8,17 +8,18 @@ const ApiResponse = require("../utils/ApiResponse");
  * @route POST /api/tasks
  */
 const createTask = asyncHandler(async (req, res) => {
-  const task = await taskService.createTask(req.body);
+  const task = await taskService.createTask({
+    ...req.body,
+    user: req.user._id,
+  });
 
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        201,
-        task,
-        "Task created successfully"
-      )
-    );
+  return res.status(201).json(
+    new ApiResponse(
+      201,
+      task,
+      "Task created successfully"
+    )
+  );
 });
 
 /**
@@ -26,17 +27,17 @@ const createTask = asyncHandler(async (req, res) => {
  * @route GET /api/tasks
  */
 const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await taskService.getAllTasks();
+  const tasks = await taskService.getAllTasks(
+    req.user._id
+  );
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        tasks,
-        "Tasks retrieved successfully"
-      )
-    );
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      tasks,
+      "Tasks retrieved successfully"
+    )
+  );
 });
 
 /**
