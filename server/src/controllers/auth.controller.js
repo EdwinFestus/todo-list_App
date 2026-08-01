@@ -29,6 +29,33 @@ const register = asyncHandler(async (req, res) => {
   );
 });
 
+const login = asyncHandler(async (req, res) => {
+  const user = await authService.loginUser(req.body);
+
+  const token = generateToken(user._id);
+
+  const userResponse = {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+    avatar: user.avatar,
+  };
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user: userResponse,
+        token,
+      },
+      "Login successful"
+    )
+  );
+});
+
 module.exports = {
   register,
+  login,
 };

@@ -6,12 +6,19 @@ const authController = require("../controllers/auth.controller");
 
 const {
   validateRegister,
+  validateLogin,
 } = require("../validators/auth.validator");
 
 router.post(
   "/register",
   validateRegister,
   authController.register
+);
+
+router.post(
+  "/login",
+  validateLogin,
+  authController.login
 );
 
 module.exports = router;
