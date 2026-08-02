@@ -29,6 +29,19 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
+    refreshTokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
     avatar: {
       type: String,
       default: "",

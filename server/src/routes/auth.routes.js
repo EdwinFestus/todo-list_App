@@ -21,4 +21,6 @@ router.post(
   authController.login
 );
 
+router.post("/refresh", authController.refresh);
+
 module.exports = router;
