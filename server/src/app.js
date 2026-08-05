@@ -7,6 +7,7 @@ const taskRoutes = require("./routes/task.routes");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 const authRoutes = require("./routes/auth.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 
 
@@ -18,6 +19,9 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
+
+
 app.use("/api/tasks", taskRoutes);
 
 

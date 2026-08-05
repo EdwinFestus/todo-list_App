@@ -36,7 +36,7 @@ const registerUser = async (userData) => {
  * Login User
  */
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+-password -refreshTokens -__v");
 
   if (!user) {
     throw new ApiError(401, "Invalid email or password");
@@ -126,8 +126,52 @@ const refreshAccessToken = async (refreshToken) => {
   };
 };
 
+
+const getCurrentUser = async (userId) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return user;
+};
+
+const updateProfile = async (userId, data) => {
+  const allowedFields = [
+    "firstName",
+    "lastName",
+    "avatar",
+  ];
+
+  const updates = {};
+
+  allowedFields.forEach((field) => {
+    if (data[field] !== undefined) {
+      updates[field] = data[field];
+    }
+  });
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    updates,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return user;
+};
+
 module.exports = {
   registerUser,
   loginUser,
   refreshAccessToken,
+  getCurrentUser, 
+  updateProfile
 };
