@@ -45,7 +45,11 @@ const getAllTasks = asyncHandler(async (req, res) => {
  * @route GET /api/tasks/:id
  */
 const getTaskById = asyncHandler(async (req, res) => {
-  const task = await taskService.getTaskById(req.params.id);
+  const task = await taskService.getTaskById(
+    req.params.id,
+    req.user._id
+  );
+
 
   if (!task) {
     throw new ApiError(404, "Task not found");
@@ -69,6 +73,7 @@ const getTaskById = asyncHandler(async (req, res) => {
 const updateTask = asyncHandler(async (req, res) => {
   const task = await taskService.updateTask(
     req.params.id,
+    req.user._id,
     req.body
   );
 
@@ -92,7 +97,10 @@ const updateTask = asyncHandler(async (req, res) => {
  * @route DELETE /api/tasks/:id
  */
 const deleteTask = asyncHandler(async (req, res) => {
-  const task = await taskService.deleteTask(req.params.id);
+  const task = await taskService.deleteTask(
+    req.params.id,
+    req.user._id
+  );
 
   if (!task) {
     throw new ApiError(404, "Task not found");
@@ -114,7 +122,10 @@ const deleteTask = asyncHandler(async (req, res) => {
  * @route PATCH /api/tasks/:id/toggle
  */
 const toggleTask = asyncHandler(async (req, res) => {
-  const task = await taskService.toggleTask(req.params.id);
+  const task = await taskService.toggleTask(
+    req.params.id,
+    req.user._id
+  );
 
   if (!task) {
     throw new ApiError(404, "Task not found");

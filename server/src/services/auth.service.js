@@ -36,7 +36,7 @@ const registerUser = async (userData) => {
  * Login User
  */
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email }).select("+-password -refreshTokens -__v");
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     throw new ApiError(401, "Invalid email or password");

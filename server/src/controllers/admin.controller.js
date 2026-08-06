@@ -1,17 +1,9 @@
 const asyncHandler = require("../middleware/asyncHandler");
 const ApiResponse = require("../utils/ApiResponse");
-const User = require("../models/user.model");
+const adminService = require("../services/admin.service");
 
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select([
-        "firstName",
-        "lastName",
-        "email",
-        "role",
-        "avatar",
-        "createdAt",
-        "updatedAt",
-    ]);
+  const users = await adminService.getAllUsers();
 
   return res.status(200).json(
     new ApiResponse(
