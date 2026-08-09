@@ -28,6 +28,16 @@ const taskSchema = new mongoose.Schema(
     }
 )
 
+taskSchema.index({
+  user: 1,
+  completed: 1,
+});
+
+taskSchema.index({
+  title: "text",
+  description: "text",
+});
+
 
 taskSchema.set("toJSON", {
   versionKey: false,

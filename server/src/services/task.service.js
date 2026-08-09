@@ -4,12 +4,68 @@ const createTask = async (taskData) => {
   return await Task.create(taskData);
 };
 
-const getAllTasks = async (userId) => {
-  return await Task.find({
+const getAllTasks = async (userId, query) => {
+  const {
+    page = 1,
+    limit = 10,
+    search,
+    completed,
+    sort = "createdAt",
+    order = "desc",
+  } = query;
+
+  const filter = {
     user: userId,
-  }).sort({
-    createdAt: -1,
-  });
+  };
+
+  if (completed !== undefined) {
+    filter.completed = completed === "true";
+  }
+
+  if (search) {
+    filter.$or = [
+      {
+        title: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+      {
+        description: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+    ];
+  }
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const sortOption = {
+    [sort]: order === "asc" ? 1 : -1,
+  };
+
+  const [tasks, total] = await Promise.all([
+    Task.find(filter)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(Number(limit)),
+
+    Task.countDocuments(filter),
+  ]);
+
+  return {
+    tasks,
+
+    pagination: {
+      totalItems: total,
+      totalPages: Math.ceil(total / Number(limit)),
+      currentPage: Number(page),
+      pageSize: Number(limit),
+      hasNextPage: skip + Number(limit) < total,
+      hasPreviousPage: Number(page) > 1,
+    },
+  };
 };
 
 const getTaskById = async (id, userId) => {

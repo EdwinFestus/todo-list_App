@@ -27,14 +27,15 @@ const createTask = asyncHandler(async (req, res) => {
  * @route GET /api/tasks
  */
 const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await taskService.getAllTasks(
-    req.user._id
+  const result = await taskService.getAllTasks(
+    req.user._id,
+    req.query
   );
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      tasks,
+      result,
       "Tasks retrieved successfully"
     )
   );
