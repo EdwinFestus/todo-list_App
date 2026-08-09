@@ -4,6 +4,7 @@ const createTask = async (taskData) => {
   return await Task.create(taskData);
 };
 
+
 const getAllTasks = async (userId, query) => {
   const {
     page = 1,
@@ -13,6 +14,9 @@ const getAllTasks = async (userId, query) => {
     sort = "createdAt",
     order = "desc",
   } = query;
+
+  const pageNumber = Math.max(Number(page), 1);
+  const pageSize = Math.max(Number(limit), 1);
 
   const filter = {
     user: userId,
@@ -39,17 +43,28 @@ const getAllTasks = async (userId, query) => {
     ];
   }
 
-  const skip = (Number(page) - 1) * Number(limit);
+  const allowedSortFields = [
+    "title",
+    "createdAt",
+    "updatedAt",
+    "completed",
+  ];
 
-  const sortOption = {
-    [sort]: order === "asc" ? 1 : -1,
-  };
+  const sortField = allowedSortFields.includes(sort)
+    ? sort
+    : "createdAt";
 
-  const [tasks, total] = await Promise.all([
+  const sortOrder = order === "asc" ? 1 : -1;
+
+  const skip = (pageNumber - 1) * pageSize;
+
+  const [tasks, totalItems] = await Promise.all([
     Task.find(filter)
-      .sort(sortOption)
+      .sort({
+        [sortField]: sortOrder,
+      })
       .skip(skip)
-      .limit(Number(limit)),
+      .limit(pageSize),
 
     Task.countDocuments(filter),
   ]);
@@ -58,15 +73,26 @@ const getAllTasks = async (userId, query) => {
     tasks,
 
     pagination: {
-      totalItems: total,
-      totalPages: Math.ceil(total / Number(limit)),
-      currentPage: Number(page),
-      pageSize: Number(limit),
-      hasNextPage: skip + Number(limit) < total,
-      hasPreviousPage: Number(page) > 1,
+      totalItems,
+
+      totalPages: Math.ceil(
+        totalItems / pageSize
+      ),
+
+      currentPage: pageNumber,
+
+      pageSize,
+
+      hasNextPage:
+        skip + pageSize < totalItems,
+
+      hasPreviousPage:
+        pageNumber > 1,
     },
   };
 };
+
+
 
 const getTaskById = async (id, userId) => {
   return await Task.findOne({

@@ -34,6 +34,10 @@ taskSchema.index({
 });
 
 taskSchema.index({
+  createdAt: -1,
+});
+
+taskSchema.index({
   title: "text",
   description: "text",
 });
